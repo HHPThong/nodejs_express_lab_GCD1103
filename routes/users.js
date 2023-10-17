@@ -63,13 +63,16 @@ router.get('/director', async function(req, res, next) {
   let uname = req.session.username;
   let shop = req.session.shop;
   let shop_id = (req.session.shop_id)? req.session.shop_id : 0;
-  
+  let interval = (req.session.interval)? req.session.interval*1000 : 5000
   let table_string = await table_display('products', shop, shop_id);
   let form_string = await select_form();
-  console.log(table_string)
+  // console.log(table_string)
   if (uname){
-    res.render('director', {title: "Director", user: uname, 
-      product_cells: table_string, select_form: form_string})
+    res.render('director', {title: "Director",
+      user: uname, 
+      product_cells: table_string, 
+      select_form: form_string,
+      interval: interval})
   } else {
     res.redirect('/users/login')
   }
@@ -86,5 +89,10 @@ router.post('/crud', async function(req, res, next) {
   await crud(req_body);
   res.redirect('/users/profile');
 });
-
+/* Router for /refreshtime, POST */
+router.post('/refreshtime', async function(req, res, next) {
+  // Save selected interval into session
+  req.session.interval = req.body.interval;
+  res.redirect('/users/director');
+});
 module.exports = router;

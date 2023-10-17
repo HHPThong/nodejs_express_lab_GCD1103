@@ -8,7 +8,7 @@ async function select_form() {
     const query_string = `SELECT * FROM shops`;
     let query_results = await client.query(query_string);
     //Generate select_form 
-    console.log(query_results);
+    // console.log(query_results);
     let html_form = `<form action="" method=POST>
         <label for="shops">Choose a shop:</label>
         <select name="shop_selected">
@@ -17,7 +17,8 @@ async function select_form() {
         let row = query_results.rows[i];
         html_form += `<option value=${row.id}>${row.name}</option>`
     }
-    html_form += `</select><input type="submit" value="Submit"></form>`
+    html_form += `</select><input type="submit" value="Submit"></form>`;
+    client.end();
     return html_form
 }
 
