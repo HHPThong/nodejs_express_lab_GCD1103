@@ -51,7 +51,7 @@ router.get('/profile', async function(req, res, next) {
     let uname = req.session.username;
     let shop = req.session.shop;
     console.log(`Session username: ${uname}`);
-    let table_string = await table_display('products', shop);
+    let table_string = await table_display('products', shop, 0);
     res.render('profile', {title: shop, product_cells: table_string, user: uname});
   } else {
     res.redirect('/users/login')
@@ -62,7 +62,9 @@ router.get('/director', async function(req, res, next) {
   // check username in session to make sure that user logged in.
   let uname = req.session.username;
   let shop = req.session.shop;
-  let table_string = await table_display('products', shop);
+  let shop_id = (req.session.shop_id)? req.session.shop_id : 0;
+  
+  let table_string = await table_display('products', shop, shop_id);
   let form_string = await select_form();
   console.log(table_string)
   if (uname){
@@ -72,6 +74,13 @@ router.get('/director', async function(req, res, next) {
     res.redirect('/users/login')
   }
 });
+/* Router for shop selection, POST */
+router.post('/director', async function(req, res, next) {
+  // Save selected shop_id into session
+  req.session.shop_id = req.body.shop_selected;
+  res.redirect('/users/director');
+});
+/* Routerfor /users/crud, POST */
 router.post('/crud', async function(req, res, next) {
   let req_body = req.body;
   await crud(req_body);

@@ -1,13 +1,20 @@
 var {Client}  = require('pg'); 
 var conn_string = require('./db_config');
 
-async function table_display(table_name, shop_name) {
+async function table_display(table_name, shop_name, shop_id) {
     // Connect to DB
     const client = new Client(conn_string);
     await client.connect(); 
     // Query to DB and get the products table 
     // const query_string = `SELECT * FROM ${table_name} WHERE shop=${shop_name}`;
-    var query_string = `SELECT * FROM  ${table_name}`;
+    var query_string = `SELECT * FROM  ${table_name}`; // all selected value=0
+    if (shop_id != 0) {
+        query_string = {
+            text: `SELECT * FROM  ${table_name} 
+                WHERE shop = (SELECT name FROM shops WHERE id=$1)`,
+            values: [shop_id],
+        }    
+    }
     if (shop_name != 'director') {
         query_string = {
             text: `SELECT * FROM  ${table_name} WHERE shop=$1`,
